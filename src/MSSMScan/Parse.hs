@@ -18,8 +18,8 @@ import qualified Data.Binary as B
 import System.IO
 import System.Environment
 
-import DMM
-import OutputPhys
+import MSSMScan.DMM
+import MSSMScan.OutputPhys
 
 {--main = do arglist <- getArgs
 

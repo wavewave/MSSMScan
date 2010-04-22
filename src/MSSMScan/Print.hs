@@ -6,9 +6,9 @@ module MSSMScan.Print where
 
 import Debug.Trace
 
-import DMM
-import OutputPhys
-import Parse
+import MSSMScan.DMM
+import MSSMScan.OutputPhys
+import MSSMScan.Parse
 
 import Data.Function
 import qualified Data.Map as M

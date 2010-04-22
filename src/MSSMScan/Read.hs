@@ -18,11 +18,11 @@ import qualified Data.Binary.Get as G
 
 import Control.Parallel
 
-import DMM
-import OutputPhys
-import Parse
-import Print 
-import Cuts
+import MSSMScan.DMM
+import MSSMScan.OutputPhys
+import MSSMScan.Parse
+import MSSMScan.Print 
+import MSSMScan.Cuts
 
 import Data.Function
 import qualified Data.Map as M
