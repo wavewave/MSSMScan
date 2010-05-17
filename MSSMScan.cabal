@@ -16,8 +16,11 @@ ghc-options: 	-Wall -O2 -threaded -funbox-strict-fields -fno-warn-unused-do-bind
 Exposed-Modules: 
 		 MSSMScan,  
 		 MSSMScan.Cuts,
-		 MSSMScan.DMM, 
+		 MSSMScan.Model,
+		 MSSMScan.Model.MSUGRA,
+		 MSSMScan.Model.DMM, 
 		 MSSMScan.OutputPhys, 
+		 MSSMScan.ParseUtil,
 		 MSSMScan.Parse, 
 		 MSSMScan.Print, 
 		 MSSMScan.Read

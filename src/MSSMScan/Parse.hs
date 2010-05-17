@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fglasgow-exts #-}
+
 module MSSMScan.Parse where
 
 import Debug.Trace
@@ -9,6 +11,8 @@ import Text.Parsec.Combinator
 import qualified Text.Parsec.Token as P
 import Text.Parsec.Language (haskellDef)
 
+import MSSMScan.ParseUtil
+
 import Data.Function
 import qualified Data.ByteString.Lazy as L
 import qualified Data.Binary as B
@@ -18,7 +22,9 @@ import qualified Data.Binary as B
 import System.IO
 import System.Environment
 
-import MSSMScan.DMM
+import MSSMScan.Model
+import MSSMScan.Model.MSUGRA
+import MSSMScan.Model.DMM
 import MSSMScan.OutputPhys
 
 {--main = do arglist <- getArgs
@@ -34,15 +40,17 @@ import MSSMScan.OutputPhys
           str1 <- hGetContents inh1
           str2 <- hGetContents inh2 --}
 
-parsestr str1 str2 =
+parsestr :: (Model a) => a -> String -> String 
+         -> [(Int,(ModelInput a, OutputPhys))]
+
+parsestr mdl str1 str2 =
           let strlines1 = lines str1
-              inputresult'  = zip [1..] $ map (run lineInput) strlines1 
+              inputresult'  = zip [1..] $ map (run (lineInput mdl)) strlines1 
               inputresult'' = filter (isRight.snd) inputresult' 
               inputresult   = map (\x->(fst x, (unRight.snd) x)) 
                                   inputresult''
               
              
-
               strlines2 = lines str2 
               outputresult'   = map (run lineOutput) strlines2
               outputresult''  = filter isRight outputresult'
@@ -76,8 +84,8 @@ isJust _       = True
 unJust (Just x) = x
 unJust Nothing  = undefined
 
-mergeresult :: [(Int,InputDMM)] -> [(Int,OutputPhys)] 
-               -> [(Int,(InputDMM,OutputPhys))]
+mergeresult :: [(Int,a)] -> [(Int,b)] 
+               -> [(Int,(a,b))]
 mergeresult [] _ = []
 mergeresult _ [] = []
 mergeresult (x@(idx,restx):xs) (y@(idy,resty):ys) = 
@@ -94,21 +102,8 @@ run p input =
     Right x  -> Right x
 
 
-lineInput :: Parser InputDMM
-lineInput  = do nmess  <- myroughfloat  
-                empty
-                mmess  <- myroughfloat 
-                empty
-                m0     <- myroughfloat
-                empty
-                alpham <- myroughfloat
-                empty
-                alphag <- myroughfloat
-                empty
-                tanb <- myroughfloat
-                
-                many (noneOf "\n\r") 
-                return $ IDMM (nmess,mmess,m0,alpham,alphag,tanb)
+--lineInput :: (Model a) => a -> Parser (ModelInput a)
+
 
 lineOutput :: Parser (Maybe (Int,OutputPhys))
 lineOutput = do id' <- myint
@@ -232,29 +227,4 @@ lineOutput = do id' <- myint
 --      <|> string "\r"
 
 
-myint :: Parser Int 
-myint = do rest <- many1 (oneOf "0123456789")
-           return $ read rest
-
-myroughfloat :: Parser Double
-myroughfloat = do result <- many1 (oneOf "+-0123456789.e")
-                  let result' = correct_double_str result 
-                                --if last result == '.' 
-                                --then result ++ "0"
-                                --else result
-                  return $ read result'
-
-correct_double_str :: String -> String 
-correct_double_str str = let (x,y) = break ( == '.') str
-                         in if y == []  
-                            then str
-                            else if y == ['.']
-                                 then x ++ ".0"
-                                 else if y !! 1 == 'e'
-                                      then x ++ ".0" ++ tail y
-                                      else str 
-
-empty = many1 (oneOf emptyletters)
-
-emptyletters = [' ']
 

@@ -18,7 +18,9 @@ import qualified Data.Binary.Get as G
 
 import Control.Parallel
 
-import MSSMScan.DMM
+import MSSMScan.Model
+import MSSMScan.Model.MSUGRA
+import MSSMScan.Model.DMM
 import MSSMScan.OutputPhys
 import MSSMScan.Parse
 import MSSMScan.Print 
@@ -29,9 +31,9 @@ import qualified Data.Map as M
 
 import Control.Monad.State.Lazy
 
-data FullModel = FullModel {
+data (Model a) => FullModel a = FullModel {
       idnum      :: Int
-    , inputparam :: InputDMM 
+    , inputparam :: (ModelInput a) 
     , outputphys :: OutputPhys 
     , fullsort   :: [MassType] 
     , roddsort   :: [MassType] 
@@ -42,12 +44,13 @@ data PatternSwitch = ROdd4 | NonSM7
 
 
 
-processonefile :: PatternSwitch -> String -> String -> CountState ()   
-processonefile sw str1 str2 = 
+processonefile :: (Model a) => a -> PatternSwitch 
+               -> String -> String -> CountState ()   
+processonefile mdl sw str1 str2 = 
 
     do (count,patmap) <- get
 
-       let simplelst = parsestr str1 str2
+       let simplelst = parsestr mdl str1 str2
            fulllst   = map assoc_sort simplelst 
 
             -- Baris cut
@@ -93,7 +96,7 @@ mai' = do arglist <- getArgs
                              (map (take 1000000) content_micro') --}
 
 
-          let test ctt = processonefile sw (fst ctt) (snd ctt)
+          let test ctt = processonefile DMM sw (fst ctt) (snd ctt)
               totalaction = mapM_ test contents
               (lencut10,patmap10) = execState totalaction (0,M.empty)
 
@@ -106,7 +109,7 @@ mai' = do arglist <- getArgs
 
 
 
-addPatternFromFullModel :: PatternSwitch -> PatternCountMap -> FullModel -> PatternCountMap
+addPatternFromFullModel :: (Model a) => PatternSwitch -> PatternCountMap -> FullModel a -> PatternCountMap
 addPatternFromFullModel sw pcm fm = addPattern patt pcm
     where patt = case sw of 
                    ROdd4  -> take 4 $ tidyup_1st_2nd_gen $ roddsort fm
@@ -124,7 +127,7 @@ instance PrettyPrintable PatternOccurrenceList where
 
 type CountState = State (Int,PatternCountMap) 
 
-feed_single_fullmodel_list :: PatternSwitch -> [FullModel] -> CountState ()
+feed_single_fullmodel_list :: (Model a) => PatternSwitch -> [FullModel a] -> CountState ()
 feed_single_fullmodel_list sw fmlst = do stat <- get 
                                          put $ foldl' onefilestep stat fmlst 
     where onefilestep (acclen, accmap) item 
@@ -133,13 +136,13 @@ feed_single_fullmodel_list sw fmlst = do stat <- get
                 in  acclen' `seq` accmap'   `seq`  (acclen', accmap')
 
 
-prettyprint :: FullModel -> IO ()
+prettyprint :: (Model a) => FullModel a -> IO ()
 prettyprint x = putStrLn $ "id =" ++ show (idnum x) ++ " : " 
                            ++ show (inputparam x) 
                            ++ " : " ++ show ( take 7 $ (sortmassassoc.makeassocmass.outputphys) x )
 
 
-assoc_sort :: (Int,(InputDMM,OutputPhys)) -> FullModel  
+assoc_sort :: (Model a) => (Int,(ModelInput a,OutputPhys)) -> FullModel a  
 assoc_sort (id1,(input1,output1)) = FullModel id1 input1 output1 
                                               fullassoc rparityassoc nonsmassoc
     where fullassoc    =  map fst $ (sortmassassoc.makeassocmass) output1
@@ -184,7 +187,7 @@ kind_Sneutrino = [SeneutrinoL,SmuneutrinoL]
 --- cut functions.
 
 
-applycut :: (OutputPhys -> Bool) -> (OutputPhys -> Bool) -> FullModel 
+applycut :: (Model a) => (OutputPhys -> Bool) -> (OutputPhys -> Bool) -> FullModel a
             -> Bool
 applycut f g x = (head rodd == Neutralino1) && (f ph) && (g ph) 
     where ph   = outputphys x  

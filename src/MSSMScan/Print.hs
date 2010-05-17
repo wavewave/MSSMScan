@@ -6,7 +6,9 @@ module MSSMScan.Print where
 
 import Debug.Trace
 
-import MSSMScan.DMM
+import MSSMScan.Model
+import MSSMScan.Model.MSUGRA
+import MSSMScan.Model.DMM
 import MSSMScan.OutputPhys
 import MSSMScan.Parse
 
