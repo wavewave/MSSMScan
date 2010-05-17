@@ -7,7 +7,7 @@ import Data.Binary
 import Data.List
 import qualified Data.Map as M
 
-  -- | OutputPhys : output of SoftSUSY and MicrOmegas.                 
+-- | OutputPhys : output of SoftSUSY and MicrOmegas.                 
 data OutputPhys = OutputPhys {
   mass_Mh   :: Double, 
   mass_MHH  :: Double,

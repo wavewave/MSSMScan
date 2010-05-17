@@ -54,12 +54,14 @@ processonefile sw str1 str2 =
 --           cutfilter = applycut masscut_baris indirect_baris {-bogus_cut-}
            
            -- Wisc mass cut with m_h > 100 and no indirect
-           cutfilter = applycut (\x -> higgs100cut x && 
-                                       masscut_wisc_other_than_higgs x)
+           cutfilter = applycut bogus_cut
+                       
+                                {-- (\x -> higgs100cut x && 
+                                       masscut_wisc_other_than_higgs x) --}
                                 bogus_cut 
            cutlst    = filter cutfilter fulllst
 
-       feed_single_fullmodel_list sw cutlst
+       trace ("length simplelst = " ++ show (length simplelst)) $ feed_single_fullmodel_list sw cutlst
 
 
 mai' = do arglist <- getArgs
