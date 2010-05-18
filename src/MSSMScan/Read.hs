@@ -17,6 +17,7 @@ import qualified Data.Binary.Get as G
 
 
 import Control.Parallel
+import Control.DeepSeq
 
 import MSSMScan.Model
 import MSSMScan.Model.MSUGRA
@@ -24,89 +25,14 @@ import MSSMScan.Model.DMM
 import MSSMScan.OutputPhys
 import MSSMScan.Parse
 import MSSMScan.Print 
-import MSSMScan.Cuts
 
 import Data.Function
 import qualified Data.Map as M
 
 import Control.Monad.State.Lazy
 
-data (Model a) => FullModel a = FullModel {
-      idnum      :: Int
-    , inputparam :: (ModelInput a) 
-    , outputphys :: OutputPhys 
-    , fullsort   :: [MassType] 
-    , roddsort   :: [MassType] 
-    , nonsmsort  :: [MassType]
-    }
 
-data PatternSwitch = ROdd4 | NonSM7
-
-
-
-processonefile :: (Model a) => a -> PatternSwitch 
-               -> String -> String -> CountState ()   
-processonefile mdl sw str1 str2 = 
-
-    do (count,patmap) <- get
-
-       let simplelst = parsestr mdl str1 str2
-           fulllst   = map assoc_sort simplelst 
-
-            -- Baris cut
---           cutfilter = applycut masscut_baris indirect_baris {-bogus_cut-}
-           
-           -- Wisc mass cut with m_h > 100 and no indirect
-           cutfilter = applycut bogus_cut
-                       
-                                {-- (\x -> higgs100cut x && 
-                                       masscut_wisc_other_than_higgs x) --}
-                                bogus_cut 
-           cutlst    = filter cutfilter fulllst
-
-       trace ("length simplelst = " ++ show (length simplelst)) $ feed_single_fullmodel_list sw cutlst
-
-
-mai' = do arglist <- getArgs
-          let swstr = arglist !! 0 
-              outfilename = arglist !! 1
-              sw = case swstr of
-                     "R4"   -> ROdd4
-                     "NSM7" -> NonSM7 
-                   
---              (num :: Int) = read $ arglist !! 1
-
-
-
-          let scanfile x = "scan" ++ show x ++ ".dat"
-              microfile x = "micro" ++ show x ++ ".dat"
-            
-          handle_out <- openFile outfilename WriteMode
-
-          handle_scan  <- mapM (\x->openFile (scanfile x)  ReadMode) [1,2]
-          handle_micro <- mapM (\x->openFile (microfile x) ReadMode) [1,2]
-
-          content_scan'  <- mapM hGetContents handle_scan
-          content_micro' <- mapM hGetContents handle_micro
-
-          let contents = zip content_scan' content_micro' 
-
-{--
-          let contents = zip (map (take 100000)  content_scan') 
-                             (map (take 1000000) content_micro') --}
-
-
-          let test ctt = processonefile DMM sw (fst ctt) (snd ctt)
-              totalaction = mapM_ test contents
-              (lencut10,patmap10) = execState totalaction (0,M.empty)
-
-          hPutStrLn handle_out $ latexprint $ PO $ sortBy patternoccorder (M.toList patmap10)
-          hPutStrLn handle_out $ show lencut10 
-
-          mapM_ hClose handle_scan
-          mapM_ hClose handle_micro
-          hClose handle_out
-
+data PatternSwitch = ROdd4 | NonSM7 | NonSM4
 
 
 addPatternFromFullModel :: (Model a) => PatternSwitch -> PatternCountMap -> FullModel a -> PatternCountMap
@@ -114,6 +40,7 @@ addPatternFromFullModel sw pcm fm = addPattern patt pcm
     where patt = case sw of 
                    ROdd4  -> take 4 $ tidyup_1st_2nd_gen $ roddsort fm
                    NonSM7 -> take 7 $ tidyup_1st_2nd_gen $ nonsmsort fm 
+                   NonSM4 -> take 4 $ tidyup_1st_2nd_gen $ nonsmsort fm
 
 
 
@@ -133,7 +60,7 @@ feed_single_fullmodel_list sw fmlst = do stat <- get
     where onefilestep (acclen, accmap) item 
               = let accmap' = addPatternFromFullModel sw accmap item
                     acclen' = acclen + 1 
-                in  acclen' `seq` accmap'   `seq`  (acclen', accmap')
+                in  sw `seq` acclen' `deepseq` accmap'   `deepseq`  (acclen', accmap')
 
 
 prettyprint :: (Model a) => FullModel a -> IO ()
@@ -187,11 +114,21 @@ kind_Sneutrino = [SeneutrinoL,SmuneutrinoL]
 --- cut functions.
 
 
-applycut :: (Model a) => (OutputPhys -> Bool) -> (OutputPhys -> Bool) -> FullModel a
-            -> Bool
-applycut f g x = (head rodd == Neutralino1) && (f ph) && (g ph) 
+applycut :: (Model a) => [(OutputPhys -> Bool)] 
+         -> [(FullModel a-> Bool) ]
+         -> FullModel a
+         -> Bool
+applycut cuts compcuts x = let boollst1 = map (\f->f ph) cuts
+                               boollst2 = map (\f->f x) compcuts 
+                           in  and boollst1
+                               && and boollst2
     where ph   = outputphys x  
-          rodd = roddsort x
+          rodd = roddsort x 
+
+{--
+(head rodd == Neutralino1) && (f ph) && (g ph) 
+    where ph   = outputphys x  
+          rodd = roddsort x --}
 
 
 

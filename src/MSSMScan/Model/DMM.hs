@@ -35,6 +35,7 @@ instance Model DMM where
                 
            many (noneOf "\n\r") 
            return $ IDMM (nmess,mmess,m0,alpham,alphag,tanb)
+    tanbeta (IDMM (_,_,_,_,_,tanb)) = tanb
 
 type InputDMM = ModelInput DMM
 

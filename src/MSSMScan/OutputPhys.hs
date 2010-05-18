@@ -7,6 +7,8 @@ import Data.Binary
 import Data.List
 import qualified Data.Map as M
 
+import Control.Parallel.Strategies
+
 -- | OutputPhys : output of SoftSUSY and MicrOmegas.                 
 data OutputPhys = OutputPhys {
   mass_Mh   :: Double, 
@@ -63,7 +65,9 @@ data MassType = Higgs | HeavyHiggs | AHiggs | CHiggs
               | ScharmR | SstrangeR | SmuonR
               | Stop1 | Sbottom1 | Stau1 | Sneutrino3
               | Stop2 | Sbottom2 | Stau2 
-              deriving (Show,Eq,Ord)
+              deriving (Show,Eq,Ord,Enum)
+
+instance NFData MassType 
 
 nulloutput = OutputPhys 0 0 0 0 0 0 0 0 0 0 
                         0 0 0 0 0 0 0 0 0 0 
@@ -72,11 +76,11 @@ nulloutput = OutputPhys 0 0 0 0 0 0 0 0 0 0
                         0 0 
                         
 instance Show OutputPhys where
-  show x =    show (mass_Mh x) ++ " "    
-           ++ show (mass_MHH x) ++ " " 
-           ++ show (mass_MH3 x) ++ " " 
-           ++ show (mass_MHc x) ++ " " 
-           ++ show (mass_MNE1 x) ++ " " 
+  show x =    "mass_Mh=" ++ show (mass_Mh x) ++ ", "    
+           ++ "mass_MHH=" ++ show (mass_MHH x) ++ ", " 
+           ++ show (mass_MH3 x) ++ ", " 
+           ++ show (mass_MHc x) ++ ", " 
+           ++ "mass_MNE1=" ++ show (mass_MNE1 x) ++ ", " 
            ++ show (mass_MNE2 x) ++ " " 
            ++ show (mass_MNE3 x) ++ " " 
            ++ show (mass_MNE4 x) ++ " " 
@@ -97,9 +101,9 @@ instance Show OutputPhys where
            ++ show (mass_MScR x) ++ " " 
            ++ show (mass_MSsR x) ++ " " 
            ++ show (mass_MSmR x) ++ " " 
-           ++ show (mass_MSt1 x) ++ " " 
+           ++ "mass_MSt1=" ++ show (mass_MSt1 x) ++ ", " 
            ++ show (mass_MSb1 x) ++ " " 
-           ++ show (mass_MSl1 x) ++ " " 
+           ++ "mass_MSl1=" ++ show (mass_MSl1 x) ++ ", " 
            ++ show (mass_MSn1 x) ++ " " 
            ++ show (mass_MSt2 x) ++ " " 
            ++ show (mass_MSb2 x) ++ " " 

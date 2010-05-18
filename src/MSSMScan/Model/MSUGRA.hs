@@ -33,7 +33,7 @@ instance Model MSUGRA where
                 
            many (noneOf "\n\r") 
            return $ IMSUGRA (m0,m12,a0,tanb)
-
+    tanbeta (IMSUGRA (_,_,_,tanb)) = tanb
 type InputMSUGRA = ModelInput MSUGRA
 
 

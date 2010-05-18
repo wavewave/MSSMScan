@@ -57,8 +57,8 @@ parsestr mdl str1 str2 =
               outputresult''' = map unRight outputresult''
               outputresult''''= filter isJust outputresult'''
               outputresult    = map unJust outputresult''''
-
-              combinedresult = mergeresult inputresult outputresult
+                                
+              combinedresult =  mergeresult inputresult outputresult
           in  combinedresult
 
 {--

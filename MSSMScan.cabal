@@ -7,7 +7,7 @@ License: 	BSD3
 License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
-Build-Depends:	base>4, binary, mtl, bytestring, containers, parsec>3, parallel>2
+Build-Depends:	base>4, binary, mtl, bytestring, containers, parsec>3, parallel>2, deepseq
 Build-Type: 	Simple
 
 hs-source-dirs: src
@@ -15,7 +15,6 @@ ghc-options: 	-Wall -O2 -threaded -funbox-strict-fields -fno-warn-unused-do-bind
 
 Exposed-Modules: 
 		 MSSMScan,  
-		 MSSMScan.Cuts,
 		 MSSMScan.Model,
 		 MSSMScan.Model.MSUGRA,
 		 MSSMScan.Model.DMM, 
