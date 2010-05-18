@@ -11,7 +11,12 @@ import Text.Parsec.Language (haskellDef)
 
 import MSSMScan.ParseUtil
 
-import qualified Data.ByteString.Lazy as L
+--import qualified Data.ByteString.Lazy as L
+
+import qualified Data.ByteString.Lazy.Char8 as B
+--import Data.ByteString.Internal
+import Data.ByteString.Lex.Lazy.Double 
+
 --import qualified Text.Show.ByteString as S
 
 --- | InputMSUGRA = m0, m1/2, a0, tanb
@@ -33,6 +38,15 @@ instance Model MSUGRA where
                 
            many (noneOf "\n\r") 
            return $ IMSUGRA (m0,m12,a0,tanb)
+    parseInput oneline = let chunks = B.split ' ' oneline
+                             a1:a2:a3:a4:[] = take 6 $ filter (not. B.null) chunks
+                             m0   = maybe 0 fst $ readDouble a1
+                             m12  = maybe 0 fst $ readDouble a2
+                             a0   = maybe 0 fst $ readDouble a3 
+                             tanb = maybe 0 fst $ readDouble a4
+                         in IMSUGRA (m0,m12,a0,tanb)
+
+
     tanbeta (IMSUGRA (_,_,_,tanb)) = tanb
 type InputMSUGRA = ModelInput MSUGRA
 

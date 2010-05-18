@@ -12,10 +12,15 @@ import Text.Parsec.Language (haskellDef)
 
 import MSSMScan.ParseUtil
 
-import qualified Data.ByteString.Lazy as L
+import qualified Data.ByteString.Lazy.Char8 as B
+--import Data.ByteString.Internal
+import Data.ByteString.Lex.Lazy.Double 
+
 --import qualified Text.Show.ByteString as S
 
 import Data.Binary 
+
+
    
 -- | InputDMM = NMess, MMess, M0, alpham, alphag, tanb
 instance Model DMM where
@@ -35,18 +40,28 @@ instance Model DMM where
                 
            many (noneOf "\n\r") 
            return $ IDMM (nmess,mmess,m0,alpham,alphag,tanb)
+    parseInput oneline = let chunks = B.split ' ' oneline
+                             a1:a2:a3:a4:a5:a6:[] = take 6 $ filter (not. B.null) chunks
+                             nmess  = maybe 0 fst $ readDouble a1
+                             mmess  = maybe 0 fst $ readDouble a2
+                             m0     = maybe 0 fst $ readDouble a3 
+                             alpham = maybe 0 fst $ readDouble a4
+                             alphag = maybe 0 fst $ readDouble a5
+                             tanb   = maybe 0 fst $ readDouble a6
+                         in IDMM (nmess,mmess,m0,alpham,alphag,tanb)
+
     tanbeta (IDMM (_,_,_,_,_,tanb)) = tanb
 
 type InputDMM = ModelInput DMM
 
 instance Show InputDMM where 
   show (IDMM (nmess,mmess,m0,alpham,alphag,tanb)) 
-      = show nmess     ++ " " 
-        ++ show mmess  ++ " " 
-        ++ show m0     ++ " " 
-        ++ show alpham ++ " "
-        ++ show alphag ++ " " 
-        ++ show tanb 
+      =    "Nmess = " ++ show nmess ++ ", " 
+        ++ "Mmess = " ++ show mmess ++ ", " 
+        ++ "m0 = " ++ show m0 ++ ", " 
+        ++ "alpham = " ++ show alpham ++ ", "
+        ++ "alphag = " ++ show alphag ++ ", " 
+        ++ "tanb = " ++ show tanb 
 
 instance Binary InputDMM where
   put (IDMM (nmess,mmess,m0,alpham,alphag,tanb)) 

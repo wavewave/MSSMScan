@@ -53,7 +53,7 @@ data OutputPhys = OutputPhys {
   higgsino2 :: Double, 
   micro_Xf  :: Double,
   micro_Omega :: Double
-} 
+} deriving Eq
 
 data MassType = Higgs | HeavyHiggs | AHiggs | CHiggs 
               | Neutralino1 | Neutralino2 | Neutralino3 | Neutralino4 
@@ -76,18 +76,18 @@ nulloutput = OutputPhys 0 0 0 0 0 0 0 0 0 0
                         0 0 
                         
 instance Show OutputPhys where
-  show x =    "mass_Mh=" ++ show (mass_Mh x) ++ ", "    
-           ++ "mass_MHH=" ++ show (mass_MHH x) ++ ", " 
-           ++ show (mass_MH3 x) ++ ", " 
-           ++ show (mass_MHc x) ++ ", " 
-           ++ "mass_MNE1=" ++ show (mass_MNE1 x) ++ ", " 
-           ++ show (mass_MNE2 x) ++ " " 
-           ++ show (mass_MNE3 x) ++ " " 
-           ++ show (mass_MNE4 x) ++ " " 
-           ++ show (mass_MC1  x) ++ " " 
-           ++ show (mass_MC2  x) ++ " " 
-           ++ show (mass_MSG  x) ++ " " 
-           ++ show (mass_MSuL x) ++ " " 
+  show x =    "Mh = "  ++ show (mass_Mh x) ++ ", "    
+           ++ "MHH = " ++ show (mass_MHH x) ++ ", " 
+           ++ "MH3 = " ++ show (mass_MH3 x) ++ ", " 
+           ++ "MHc = " ++ show (mass_MHc x) ++ ", " 
+           ++ "MNE1 = " ++ show (mass_MNE1 x) ++ ", " 
+           ++ "MNE2 = " ++ show (mass_MNE2 x) ++ ", " 
+           ++ "MNE3 = " ++ show (mass_MNE3 x) ++ ", " 
+           ++ "MNE4 = " ++ show (mass_MNE4 x) ++ ", " 
+           ++ "MC1 = " ++ show (mass_MC1  x) ++ ", " 
+           ++ "MC2 = " ++ show (mass_MC2  x) ++ ", " 
+           ++ "MSG = " ++ show (mass_MSG  x) ++ ", " 
+           ++ "MSuL = " ++ show (mass_MSuL x) ++ ", " 
            ++ show (mass_MSdL x) ++ " " 
            ++ show (mass_MSeL x) ++ " " 
            ++ show (mass_MSne x) ++ " " 
@@ -112,12 +112,12 @@ instance Show OutputPhys where
            ++ show (gmuon     x) ++ " " 
            ++ show (bsgnlo    x) ++ " " 
            ++ show (bsmumu    x) ++ " " 
-           ++ show (bino      x) ++ " " 
-           ++ show (wino      x) ++ " " 
-           ++ show (higgsino1 x) ++ " " 
-           ++ show (higgsino2 x) ++ " "  
-           ++ show (micro_Xf  x) ++ " " 
-           ++ show (micro_Omega x)  
+           ++ "bino = " ++ show (bino      x) ++ ", " 
+           ++ "wino = " ++ show (wino      x) ++ ", " 
+           ++ "higgsino = " ++ show (higgsino1 x) ++ ", " 
+           ++ "higgsino = " ++ show (higgsino2 x) ++ ", "  
+           ++ "micro_Xf = " ++ show (micro_Xf  x) ++ ", " 
+           ++ "micro_Omega = " ++ show (micro_Omega x)  
 
 instance Binary OutputPhys where
   put x =     put (mass_Mh x) >> put (mass_MHH x) >> put (mass_MH3 x) >> put (mass_MHc x) 
