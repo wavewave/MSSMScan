@@ -36,7 +36,10 @@ data PatternSwitch = ROdd4 | NonSM7 | NonSM4
 
 
 addPatternFromFullModel :: (Model a) => PatternSwitch -> PatternCountMap -> FullModel a -> PatternCountMap
-addPatternFromFullModel sw pcm fm = addPattern patt pcm
+addPatternFromFullModel sw pcm fm = {-- if patt == [Neutralino1,Stop1,Neutralino2,Chargino1]
+                                      then trace ("||||||||||||||||id = " ++ show (idnum fm)) addPattern patt pcm
+                                      else addPattern patt pcm -}
+                                    addPattern patt pcm
     where patt = case sw of 
                    ROdd4  -> take 4 $ tidyup_1st_2nd_gen $ roddsort fm
                    NonSM7 -> take 7 $ tidyup_1st_2nd_gen $ nonsmsort fm 
@@ -120,8 +123,13 @@ applycut :: (Model a) => [(OutputPhys -> Bool)]
          -> Bool
 applycut cuts compcuts x = let boollst1 = map (\f->f ph) cuts
                                boollst2 = map (\f->f x) compcuts 
-                           in  and boollst1
+                           in     and boollst1
                                && and boollst2
+{-                           in  let result =    and boollst1
+                                            && and boollst2
+                               in if idnum x == 81767
+                                    then trace ("81767 cut = " ++ show boollst1 ++ show boollst2 ) result
+                                    else result -}
     where ph   = outputphys x  
           rodd = roddsort x 
 

@@ -228,9 +228,18 @@ parseOutput ostr = do let chunks = B.split ' ' ostr
                           myint    x = do y <- B.readInt x
                                           return (fst y)
                           mydouble x = do y <- readDouble x
-                                          return (fst y)
+                                          if (not. B.null .snd) y
+                                            then {- trace ("x = " ++ show x ++ "\ntempsol :" ++ (show $ tempsol x) ++ "\n") -}
+                                                 do y' <- readDouble (tempsol x)
+                                                    {- trace ("y'= " ++ show y') -}
+                                                    return (fst y')
+                                            else return (fst y)
+                          tempsol str = let (fore,rear) = B.break (=='.') str
+                                            str' = fore `B.append` B.pack ".0" `B.append` B.tail rear
+                                        in str'
+
                       id' <- myint a1
-                      let id = if (id' `mod` 100 == 0) 
+                      let id = if (id' `mod` 10000 == 0) 
                                  then trace ("id = " ++ show id') id'
                                  else id'
                       data_Mh   <- mydouble a2
@@ -305,11 +314,16 @@ newparsestr mdl str1 str2 =
               
              
               strlines2 = B.lines str2 
-              parseOutput' x = if parseOutput x == Nothing 
-                                 then trace ("wrong output = " ++ (show x)) Nothing 
-                                 else parseOutput x
+              parseOutput' x = let output = parseOutput x 
+                               in if output == Nothing 
+                                    then trace ("wrong output = " ++ (show x)) Nothing 
+                                    else output 
+                                  {--  else if (fst.unJust) output == 81767 
+                                            then trace ("special 81767 = " ++ (show $ (snd.unJust) output) ) output
+                                            else output --}
+                                  
 
-              outputresult'   = map (parseOutput) strlines2
+              outputresult'   = map (parseOutput') strlines2
 
               outputresult''''= filter isJust outputresult'
               outputresult    = map unJust outputresult''''

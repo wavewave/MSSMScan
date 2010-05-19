@@ -107,11 +107,11 @@ instance Show OutputPhys where
            ++ show (mass_MSn1 x) ++ " " 
            ++ show (mass_MSt2 x) ++ " " 
            ++ show (mass_MSb2 x) ++ " " 
-           ++ show (mass_MSl2 x) ++ " " 
-           ++ show (deltarho  x) ++ " " 
-           ++ show (gmuon     x) ++ " " 
-           ++ show (bsgnlo    x) ++ " " 
-           ++ show (bsmumu    x) ++ " " 
+           ++ show (mass_MSl2 x) ++ ", " 
+           ++ "deltarho =" ++ show (deltarho  x) ++ ", " 
+           ++ "gmuon =" ++ show (gmuon     x) ++ ", " 
+           ++ "bsgnlo =" ++ show (bsgnlo    x) ++ ", " 
+           ++ "bsmumu =" ++ show (bsmumu    x) ++ ", " 
            ++ "bino = " ++ show (bino      x) ++ ", " 
            ++ "wino = " ++ show (wino      x) ++ ", " 
            ++ "higgsino = " ++ show (higgsino1 x) ++ ", " 
@@ -219,7 +219,7 @@ type PatternCountMap = M.Map Pattern Int
 
 addPattern :: Pattern -> PatternCountMap -> PatternCountMap 
 addPattern patt pcm = let patcount = M.lookup patt pcm 
-                      in  case patcount of
+                      in case patcount of
                             Nothing -> M.insert patt 1 pcm 
                             Just n  -> M.adjust (+1) patt pcm
 
