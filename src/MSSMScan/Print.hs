@@ -6,6 +6,8 @@ module MSSMScan.Print where
 
 import Debug.Trace
 
+import Data.List.Split
+
 import MSSMScan.Model
 import MSSMScan.Model.MSUGRA
 import MSSMScan.Model.DMM
@@ -81,3 +83,10 @@ instance LaTeXPrint PatternOccurrenceList where
     latexprint (PO lst) = "\\begin{tabular}{|c|c|} \n \\hline \n"
                            ++ latexprintlist "\\\\\n" lst  
                            ++ "\\\\\n\\hline \n \\end{tabular} \n"
+
+
+latexprint_with_line n (PO lst) = concatMap print_one_chunk lsts
+    where lsts = chunk n lst 
+          print_one_chunk lst =   "\\begin{tabular}{|c|c|} \n \\hline \n"
+                               ++ latexprintlist "\\\\\n" lst  
+                               ++ "\\\\\n\\hline \n \\end{tabular} \n \\pagebreak \n" 

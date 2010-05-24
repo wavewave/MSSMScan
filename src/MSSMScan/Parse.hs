@@ -97,11 +97,7 @@ run p input =
 
 
 lineOutput :: Parser (Maybe (Int,OutputPhys))
-lineOutput = do id' <- myint
-                let id = if (id' `mod` 100 == 0) 
-                         then trace ("id = " ++ show id') id'
-                         else id'
-                --id <- myint
+lineOutput = do id <- myint
                 empty 
                 data_Mh <- myroughfloat
                 empty

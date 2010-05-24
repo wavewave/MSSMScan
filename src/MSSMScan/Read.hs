@@ -36,9 +36,9 @@ data PatternSwitch = ROdd4 | NonSM7 | NonSM4
 
 
 addPatternFromFullModel :: (Model a) => PatternSwitch -> PatternCountMap -> FullModel a -> PatternCountMap
-addPatternFromFullModel sw pcm fm = {-- if patt == [Neutralino1,Stop1,Neutralino2,Chargino1]
-                                      then trace ("||||||||||||||||id = " ++ show (idnum fm)) addPattern patt pcm
-                                      else addPattern patt pcm -}
+addPatternFromFullModel sw pcm fm = {--case patt of 
+                                      HeavyHiggs:AHiggs:CHiggs:Neutralino1:_ ->   trace ("||||||||||||||||id = " ++ show patt ++ ":" ++ show (idnum fm) ++ show (outputphys fm)) addPattern patt pcm
+                                      _ ->  addPattern patt pcm  --}
                                     addPattern patt pcm
     where patt = case sw of 
                    ROdd4  -> take 4 $ tidyup_1st_2nd_gen $ roddsort fm
