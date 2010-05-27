@@ -22,7 +22,8 @@ Exposed-Modules:
 		 MSSMScan.ParseUtil,
 		 MSSMScan.Parse, 
 		 MSSMScan.Print, 
-		 MSSMScan.Read
+		 MSSMScan.Read,
+		 MSSMScan.Pattern
 		 
 --Extra-source-files: rootcode/makehist.h
 --extra-lib-dirs:  $(ROOTSYS)/lib

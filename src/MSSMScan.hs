@@ -6,7 +6,8 @@ module MSSMScan (
   module MSSMScan.Parse, 
   module MSSMScan.ParseUtil,
   module MSSMScan.Print, 
-  module MSSMScan.Read
+  module MSSMScan.Read,
+  module MSSMScan.Pattern
   ) where
 
 import MSSMScan.Model
@@ -17,4 +18,5 @@ import MSSMScan.Parse
 import MSSMScan.ParseUtil
 import MSSMScan.Print
 import MSSMScan.Read
+import MSSMScan.Pattern
 

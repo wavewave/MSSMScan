@@ -26,6 +26,9 @@ import MSSMScan.OutputPhys
 import MSSMScan.Parse
 import MSSMScan.Print 
 
+import MSSMScan.Pattern
+
+
 import Data.Function
 import qualified Data.Map as M
 
@@ -58,12 +61,13 @@ instance PrettyPrintable PatternOccurrenceList where
 type CountState = State (Int,PatternCountMap) 
 
 feed_single_fullmodel_list :: (Model a) => PatternSwitch -> [FullModel a] -> CountState ()
-feed_single_fullmodel_list sw fmlst = do stat <- get 
-                                         put $ foldl' onefilestep stat fmlst 
+feed_single_fullmodel_list sw fmlst = 
+    do stat <- get 
+       put $ foldl' onefilestep stat fmlst 
     where onefilestep (acclen, accmap) item 
               = let accmap' = addPatternFromFullModel sw accmap item
                     acclen' = acclen + 1 
-                in  sw `seq` acclen' `deepseq` accmap'   `deepseq`  (acclen', accmap')
+                in  acclen' `seq`  accmap'  `seq`  (acclen', accmap')
 
 
 prettyprint :: (Model a) => FullModel a -> IO ()
@@ -125,19 +129,7 @@ applycut cuts compcuts x = let boollst1 = map (\f->f ph) cuts
                                boollst2 = map (\f->f x) compcuts 
                            in     and boollst1
                                && and boollst2
-{-                           in  let result =    and boollst1
-                                            && and boollst2
-                               in if idnum x == 81767
-                                    then trace ("81767 cut = " ++ show boollst1 ++ show boollst2 ) result
-                                    else result -}
     where ph   = outputphys x  
-          rodd = roddsort x 
-
-{--
-(head rodd == Neutralino1) && (f ph) && (g ph) 
-    where ph   = outputphys x  
-          rodd = roddsort x --}
-
 
 
 ---- pattern ordering 

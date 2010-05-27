@@ -29,18 +29,7 @@ import MSSMScan.Model.MSUGRA
 import MSSMScan.Model.DMM
 import MSSMScan.OutputPhys
 
-{--main = do arglist <- getArgs
-
-          let inputdmm  = arglist !! 0 
-              outputdmm = arglist !! 1
-              outbyte      = arglist !! 2
-
-          inh1 <- openFile inputdmm ReadMode
-          inh2 <- openFile outputdmm ReadMode
-          outh <- openFile outbyte WriteMode
-
-          str1 <- hGetContents inh1
-          str2 <- hGetContents inh2 --}
+import MSSMScan.Pattern
 
 parsestr :: (Model a) => a -> String -> String 
          -> [(Int,(ModelInput a, OutputPhys))]
@@ -216,7 +205,7 @@ lineOutput = do id <- myint
 
 parseOutput :: B.ByteString -> Maybe (Int,OutputPhys)
 parseOutput ostr = do let chunks = B.split ' ' ostr
-                          ~(a1:a2:a3:a4:a5:a6:a7:a8:a9:a10
+                          (a1:a2:a3:a4:a5:a6:a7:a8:a9:a10
                                 :a11:a12:a13:a14:a15:a16:a17:a18:a19:a20
                                 :a21:a22:a23:a24:a25:a26:a27:a28:a29:a30
                                 :a31:a32:a33:a34:a35:a36:a37:a38:a39:a40
@@ -225,9 +214,7 @@ parseOutput ostr = do let chunks = B.split ' ' ostr
                                           return (fst y)
                           mydouble x = do y <- readDouble x
                                           if (not. B.null .snd) y
-                                            then {- trace ("x = " ++ show x ++ "\ntempsol :" ++ (show $ tempsol x) ++ "\n") -}
-                                                 do y' <- readDouble (tempsol x)
-                                                    {- trace ("y'= " ++ show y') -}
+                                            then do y' <- readDouble (tempsol x)
                                                     return (fst y')
                                             else return (fst y)
                           tempsol str = let (fore,rear) = B.break (=='.') str
@@ -237,7 +224,7 @@ parseOutput ostr = do let chunks = B.split ' ' ostr
                       id' <- myint a1
                       let id = if (id' `mod` 10000 == 0) 
                                  then trace ("id = " ++ show id') id'
-                                 else id'
+                                 else id' 
                       data_Mh   <- mydouble a2
                       data_MHH  <- mydouble a3
                       data_MH3  <- mydouble a4

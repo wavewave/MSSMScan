@@ -1,3 +1,5 @@
+{-# LANGUAGE BangPatterns #-}
+
 module MSSMScan.OutputPhys where
 
 import qualified Data.ByteString.Lazy as L
@@ -8,6 +10,9 @@ import Data.List
 import qualified Data.Map as M
 
 import Control.Parallel.Strategies
+
+
+--import MSSMScan.Test
 
 -- | OutputPhys : output of SoftSUSY and MicrOmegas.                 
 data OutputPhys = OutputPhys {
@@ -213,14 +218,15 @@ isrparityodd AHiggs     = False
 isrparityodd CHiggs     = False
 isrparityodd _          = True
 
-type Pattern = [MassType] 
-type PatternCountMap = M.Map Pattern Int 
+--type Pattern = [MassType] 
+--type PatternCountMap = M.Map Pattern Int 
 
-
+{-
 addPattern :: Pattern -> PatternCountMap -> PatternCountMap 
 addPattern patt pcm = let patcount = M.lookup patt pcm 
-                      in case patcount of
-                            Nothing -> M.insert patt 1 pcm 
-                            Just n  -> M.adjust (+1) patt pcm
+                      in patcount `seq` case patcount of
+                                          Nothing -> M.insert patt 1 pcm 
+                                          Just n  -> M.adjust (+1) patt pcm
 
 newtype PatternOccurrenceList = PO [(Pattern,Int)] 
+-}

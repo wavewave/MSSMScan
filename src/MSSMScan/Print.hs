@@ -13,6 +13,7 @@ import MSSMScan.Model.MSUGRA
 import MSSMScan.Model.DMM
 import MSSMScan.OutputPhys
 import MSSMScan.Parse
+import MSSMScan.Pattern
 
 import Data.Function
 import qualified Data.Map as M
