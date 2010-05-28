@@ -285,34 +285,30 @@ parseOutput ostr = do let chunks = B.split ' ' ostr
                       return (id, output)
 
 newparsestr :: (Model a) => a -> B.ByteString -> B.ByteString 
-         -> [(Int,(ModelInput a,OutputPhys))] --- [(Int,(ModelInput a, OutputPhys))]
-
+         -> [(Int,(ModelInput a,OutputPhys))] 
 newparsestr mdl str1 str2 =
           let strlines1 = B.lines str1
 
               inputresult = zip [1..] $ map parseInput strlines1
-   --            inputresult'' = filter (isRight.snd) inputresult' 
-   --           inputresult   = map (\x->(fst x, (unRight.snd) x)) 
-    --                              inputresult'' --}
               
              
               strlines2 = B.lines str2 
-              parseOutput' x = let output = parseOutput x 
+     {-         parseOutput' x = let output = parseOutput x 
                                in if output == Nothing 
                                     then trace ("wrong output = " ++ (show x)) Nothing 
                                     else output 
                                   {--  else if (fst.unJust) output == 81767 
                                             then trace ("special 81767 = " ++ (show $ (snd.unJust) output) ) output
-                                            else output --}
+                                            else output --} -}
                                   
 
-              outputresult'   = map (parseOutput') strlines2
+              outputresult'   = map (parseOutput) strlines2
 
               outputresult''''= filter isJust outputresult'
               outputresult    = map unJust outputresult''''
                                 
               combinedresult =  mergeresult inputresult outputresult 
-          in  combinedresult -- inputresult' -- combinedresult
+          in  combinedresult
 
 
 
