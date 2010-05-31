@@ -15,6 +15,10 @@ import MSSMScan.OutputPhys
 import MSSMScan.Parse
 import MSSMScan.Pattern
 
+import Text.StringTemplate
+import Text.StringTemplate.Helpers
+
+
 import Data.Function
 import qualified Data.Map as M
 
@@ -91,3 +95,15 @@ latexprint_with_line n (PO lst) = concatMap print_one_chunk lsts
           print_one_chunk lst =   "\\begin{tabular}{|c|c|} \n \\hline \n"
                                ++ latexprintlist "\\\\\n" lst  
                                ++ "\\\\\n\\hline \n \\end{tabular} \n \\pagebreak \n" 
+
+latexprint_with_line_ST :: Int -> PatternOccurrenceList -> IO String
+latexprint_with_line_ST n (PO lst) = 
+    do templates <- directoryGroup "templates"
+       let str = renderTemplateGroup templates [("tables",mytables)] "mytex"
+       return str
+
+    where lsts = chunk n lst 
+          print_one_chunk lst =   "\\begin{tabular}{|c|c|} \n \\hline \n"
+                                  ++ latexprintlist "\\\\\n" lst  
+                                ++ "\\\\\n\\hline \n \\end{tabular} \n \\pagebreak \n" 
+          mytables = concatMap print_one_chunk lsts

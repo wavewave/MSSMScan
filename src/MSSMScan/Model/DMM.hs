@@ -4,19 +4,11 @@ module MSSMScan.Model.DMM where
 
 import MSSMScan.Model
 
-import Text.Parsec
-import Text.Parsec.String
-import Text.Parsec.Combinator
-import qualified Text.Parsec.Token as P 
-import Text.Parsec.Language (haskellDef)
-
 import MSSMScan.ParseUtil
 
 import qualified Data.ByteString.Lazy.Char8 as B
---import Data.ByteString.Internal
 import Data.ByteString.Lex.Lazy.Double 
 
---import qualified Text.Show.ByteString as S
 
 import Data.Binary 
 
@@ -25,21 +17,6 @@ import Data.Binary
 -- | InputDMM = NMess, MMess, M0, alpham, alphag, tanb
 instance Model DMM where
     data ModelInput DMM =  IDMM (Double,Double,Double,Double,Double,Double)
-    lineInput DMM = 
-        do nmess  <- myroughfloat  
-           empty
-           mmess  <- myroughfloat 
-           empty
-           m0     <- myroughfloat
-           empty
-           alpham <- myroughfloat
-           empty
-           alphag <- myroughfloat
-           empty
-           tanb <- myroughfloat
-                
-           many (noneOf "\n\r") 
-           return $ IDMM (nmess,mmess,m0,alpham,alphag,tanb)
     parseInput oneline = let chunks = B.split ' ' oneline
                              a1:a2:a3:a4:a5:a6:[] = take 6 $ filter (not. B.null) chunks
                              nmess  = maybe 0 fst $ readDouble a1

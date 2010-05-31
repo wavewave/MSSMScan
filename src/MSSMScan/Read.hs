@@ -32,21 +32,11 @@ import MSSMScan.Pattern
 import Data.Function
 import qualified Data.Map as M
 
-import Control.Monad.State.Lazy
+import Control.Monad.State.Strict
 
 
 data PatternSwitch = ROdd4 | NonSM7 | NonSM4
 
-
-addPatternFromFullModel :: (Model a) => PatternSwitch -> PatternCountMap -> FullModel a -> PatternCountMap
-addPatternFromFullModel sw pcm fm = {--case patt of 
-                                      HeavyHiggs:AHiggs:CHiggs:Neutralino1:_ ->   trace ("||||||||||||||||id = " ++ show patt ++ ":" ++ show (idnum fm) ++ show (outputphys fm)) addPattern patt pcm
-                                      _ ->  addPattern patt pcm  --}
-                                    addPattern patt pcm
-    where patt = case sw of 
-                   ROdd4  -> take 4 $ tidyup_1st_2nd_gen $ roddsort fm
-                   NonSM7 -> take 7 $ tidyup_1st_2nd_gen $ nonsmsort fm 
-                   NonSM4 -> take 4 $ tidyup_1st_2nd_gen $ nonsmsort fm
 
 
 
@@ -58,16 +48,81 @@ instance PrettyPrintable PatternOccurrenceList where
         where lst' = map formatting lst
               formatting x = show (fst x) ++ ":" ++ show (snd x)
 
-type CountState = State (Int,PatternCountMap) 
 
-feed_single_fullmodel_list :: (Model a) => PatternSwitch -> [FullModel a] -> CountState ()
+type PatternHandleMap = M.Map Pattern Handle
+
+
+data Count a = Count { totalcount :: Int
+                     , pattcount  :: PatternCountMap
+                     , pattlist   :: (PatternModelMap a) 
+                     , handlelist :: PatternHandleMap
+                     , fileprefix :: String
+                     }
+
+type CountState a = StateT (Count a) IO
+
+--type CountState a= State (Count a)
+
+pattType :: (Model a) => PatternSwitch -> FullModel a -> Pattern
+pattType sw fm = case sw of 
+                   ROdd4  -> take 4 $ tidyup_1st_2nd_gen $ roddsort fm
+                   NonSM7 -> take 7 $ tidyup_1st_2nd_gen $ nonsmsort fm 
+                   NonSM4 -> take 4 $ tidyup_1st_2nd_gen $ nonsmsort fm
+
+
+
+classifyPattern :: (Model a) => Pattern -> (FullModel a) -> CountState a ()
+classifyPattern patt fullmodel = 
+    do stat <- get
+
+       let prefix = fileprefix stat
+           hdl    = handlelist stat
+       let hdllkup = M.lookup patt hdl 
+
+       case hdllkup of 
+         Nothing -> do newhdl <- liftIO $ 
+                                 do putStrLn ("new pattern " ++ show patt)
+                                    let fn = prefix ++ show patt ++ ".dat" 
+                                             
+                                    h <- openFile fn WriteMode
+                                    hPutStrLn h $ print_fullmodel fullmodel
+                                    return $ M.insert patt h hdl
+                       put $ stat {handlelist = newhdl}
+                       
+                                
+
+         Just h  -> liftIO $ hPutStrLn h $ print_fullmodel fullmodel 
+
+print_fullmodel fullmodel = show (idnum fullmodel) ++ " : " ++ 
+                            show (inputparam fullmodel) ++ 
+                            show (outputphys fullmodel)
+
+
+
+addPatternModelMap :: (Model a) => PatternSwitch -> PatternModelMap a -> FullModel a -> PatternModelMap a
+addPatternModelMap sw pmm fm = addPatternModel (pattType sw fm) fm pmm
+
+
+feed_single_fullmodel_list :: (Model a) => PatternSwitch -> [FullModel a] -> CountState a ()
 feed_single_fullmodel_list sw fmlst = 
-    do stat <- get 
-       put $ foldl' onefilestep stat fmlst 
-    where onefilestep (acclen, accmap) item 
-              = let accmap' = addPatternFromFullModel sw accmap item
-                    acclen' = acclen + 1 
-                in  acclen' `seq`  accmap'  `seq`  (acclen', accmap')
+    do mapM_  onefilestep fmlst 
+    where onefilestep fullmodel 
+              = do stat <- get 
+                   let acclen    = totalcount stat
+                       accmap    = pattcount  stat 
+--                       hdl       = handlelist stat
+
+                       patt      = pattType sw fullmodel
+                       accmap'   = addPattern patt accmap 
+                       acclen'   = acclen + 1 
+
+
+                   classifyPattern patt fullmodel
+                   stat' <- get 
+
+                   acclen' `seq`  accmap'  `seq`  -- accmdllst' `seq`
+                        put $ stat' { totalcount = acclen' ,
+                                      pattcount  = accmap' } 
 
 
 prettyprint :: (Model a) => FullModel a -> IO ()
