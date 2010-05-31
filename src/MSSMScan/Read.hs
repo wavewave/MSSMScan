@@ -94,7 +94,7 @@ classifyPattern patt fullmodel =
          Just h  -> liftIO $ hPutStrLn h $ print_fullmodel fullmodel 
 
 print_fullmodel fullmodel = show (idnum fullmodel) ++ " : " ++ 
-                            show (inputparam fullmodel) ++ 
+                            show (inputparam fullmodel) ++ " | " ++ 
                             show (outputphys fullmodel)
 
 

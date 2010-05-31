@@ -1,5 +1,5 @@
 Name:		MSSMScan
-Version:	0.1
+Version:	0.2
 Synopsis:	Common Scan Interface for MSSM models
 Description: 	Common Scan Interface for MSSM models such as mSUGRA, 
 		Deflected Mirage Mediation et al. 
