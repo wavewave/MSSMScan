@@ -28,9 +28,9 @@ type InputMSUGRA = ModelInput MSUGRA
 
 
 instance Show InputMSUGRA where 
-  show (IMSUGRA (m0,m12,a0,tanb)) =     show m0 ++ " " 
-                                     ++ show m12 ++ " " 
-                                     ++ show a0  ++ " " 
-                                     ++ show tanb 
+  show (IMSUGRA (m0,m12,a0,tanb)) =     "m0="   ++ show m0 ++ ", " 
+                                     ++ "m12="  ++ show m12 ++ ", " 
+                                     ++ "a0="   ++ show a0  ++ ", " 
+                                     ++ "tanb=" ++ show tanb 
 
 

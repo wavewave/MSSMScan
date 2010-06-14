@@ -15,6 +15,8 @@ import Data.ByteString.Lex.Lazy.Double
 
 import Control.Monad
 
+-- import qualified Data.Vector.Fusion.Stream as Stream
+
 
 import System.IO
 import System.Environment
@@ -39,7 +41,8 @@ isJust _       = True
 unJust (Just x) = x
 unJust Nothing  = undefined
 
-mergeresult :: [(Int,a)] -> [(Int,b)] 
+ 
+mergeresult :: [(Int,a)] -> [(Int,b)]
                -> [(Int,(a,b))]
 mergeresult [] _ = []
 mergeresult _ [] = []
@@ -49,10 +52,6 @@ mergeresult (x@(idx,restx):xs) (y@(idy,resty):ys) =
     else if idx < idy 
            then mergeresult xs (y:ys)
            else [] 
-
-
-                                                              
-
 
 
 
@@ -139,21 +138,20 @@ parseOutput ostr = do let chunks = B.split ' ' ostr
 
 newparsestr :: (Model a) => a -> B.ByteString -> B.ByteString 
          -> [(Int,(ModelInput a,OutputPhys))] 
-newparsestr mdl str1 str2 =
-          let strlines1 = B.lines str1
-
-              inputresult = zip [1..] $ map parseInput strlines1
-              
+newparsestr mdl str1 str2 = 
+          let strlines1 = B.lines str1 
+              inputresult = {-# SCC "inputresult" #-} zip [1..] $ map parseInput strlines1
+    
              
               strlines2 = B.lines str2 
                                 
 
               outputresult'   = map (parseOutput) strlines2
 
-              outputresult''''= filter isJust outputresult'
-              outputresult    = map unJust outputresult''''
+              outputresult''  = filter isJust outputresult'
+              outputresult    = map unJust outputresult''
                                 
-              combinedresult =  mergeresult inputresult outputresult 
+              combinedresult  = mergeresult inputresult outputresult 
           in  combinedresult
 
 

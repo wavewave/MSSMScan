@@ -36,6 +36,7 @@ import Control.Monad.State.Strict
 
 
 data PatternSwitch = ROdd4 | NonSM7 | NonSM4
+data FileWorkSwitch = None | EachFileClassify
 
 
 
@@ -59,6 +60,7 @@ data Count a = Count { totalcount :: Int
                      , fileprefix :: String
                      }
 
+
 type CountState a = StateT (Count a) IO
 
 --type CountState a= State (Count a)
@@ -71,8 +73,14 @@ pattType sw fm = case sw of
 
 
 
-classifyPattern :: (Model a) => Pattern -> (FullModel a) -> CountState a ()
-classifyPattern patt fullmodel = 
+classifyIOwork :: (Model a) => FileWorkSwitch -> Pattern -> (FullModel a) 
+              -> CountState a () 
+classifyIOwork None _ _ = return () 
+classifyIOwork EachFileClassify patt fullmodel = classifyPatternFile patt fullmodel
+
+
+classifyPatternFile :: (Model a) => Pattern -> (FullModel a) -> CountState a ()
+classifyPatternFile patt fullmodel = 
     do stat <- get
 
        let prefix = fileprefix stat
@@ -91,7 +99,7 @@ classifyPattern patt fullmodel =
                        
                                 
 
-         Just h  -> liftIO $ hPutStrLn h $ print_fullmodel fullmodel 
+         Just h  -> liftIO $ hPutStrLn h $ print_fullmodel fullmodel  
 
 print_fullmodel fullmodel = show (idnum fullmodel) ++ " : " ++ 
                             show (inputparam fullmodel) ++ " | " ++ 
@@ -103,24 +111,24 @@ addPatternModelMap :: (Model a) => PatternSwitch -> PatternModelMap a -> FullMod
 addPatternModelMap sw pmm fm = addPatternModel (pattType sw fm) fm pmm
 
 
-feed_single_fullmodel_list :: (Model a) => PatternSwitch -> [FullModel a] -> CountState a ()
-feed_single_fullmodel_list sw fmlst = 
+feed_single_fullmodel_list :: (Model a) => FileWorkSwitch -> PatternSwitch 
+                           -> [FullModel a] -> CountState a ()
+feed_single_fullmodel_list iosw sw fmlst = 
     do mapM_  onefilestep fmlst 
     where onefilestep fullmodel 
               = do stat <- get 
                    let acclen    = totalcount stat
                        accmap    = pattcount  stat 
---                       hdl       = handlelist stat
 
                        patt      = pattType sw fullmodel
                        accmap'   = addPattern patt accmap 
                        acclen'   = acclen + 1 
 
 
-                   classifyPattern patt fullmodel
+                   classifyIOwork iosw patt fullmodel
                    stat' <- get 
 
-                   acclen' `seq`  accmap'  `seq`  -- accmdllst' `seq`
+                   acclen' `seq`  accmap'  `seq`  
                         put $ stat' { totalcount = acclen' ,
                                       pattcount  = accmap' } 
 

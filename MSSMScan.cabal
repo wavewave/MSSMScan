@@ -1,5 +1,5 @@
 Name:		MSSMScan
-Version:	0.2
+Version:	0.3
 Synopsis:	Common Scan Interface for MSSM models
 Description: 	Common Scan Interface for MSSM models such as mSUGRA, 
 		Deflected Mirage Mediation et al. 
@@ -25,18 +25,3 @@ Exposed-Modules:
 		 MSSMScan.Read,
 		 MSSMScan.Pattern
 		 
---Extra-source-files: rootcode/makehist.h
---extra-lib-dirs:  $(ROOTSYS)/lib
--- /home/wavewave/nfs/root/lib
---extra-libraries: stdc++, New, Core, Cint, 
---		 Graf, Graf3d, Hist, Html, Matrix, Minuit, 
---		 Postscript, Proof, Tree, TreePlayer, Thread,
---		 Gpad, Gui, GX11, X3d
---Extensions:	 ForeignFunctionInterface
--- Extra-libraries: stdc++
---Include-dirs: 	rootcode
---		$(ROOTSYS)/include 
---		/home/wavewave/nfs/root/include
-
---Install-includes: makehist.h
---C-sources: 	rootcode/makehist.cpp
