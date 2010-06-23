@@ -36,8 +36,9 @@ import qualified Data.Iteratee as Iter
 import Data.Function
 import qualified Data.Map as M
 
-import Control.Monad.State.Strict
+import Control.Monad.Trans.State.Strict
 
+import Control.Monad.IO.Class
 
 data PatternSwitch = ROdd4 | NonSM7 | NonSM4
 data FileWorkSwitch = None | EachFileClassify | TH1FClassify | TH2FClassify
@@ -69,6 +70,7 @@ data Count a = Count { totalcount :: Int
                      , th2finfo   :: InfoTH2F
                      , th2flist   :: PatternTH2FMap
                      , fileprefix :: String
+                     , testth1f   :: TH1F
                      }
 
 
@@ -172,6 +174,32 @@ iter_patt_count sw = Iter.IterateeG (step M.empty)
       step acc (Iter.Chunk xs) = return $ Iter.Cont (Iter.IterateeG . step $! addPatternList acc xs) Nothing
       step acc str = return $ Iter.Done acc str
                                                      
+iter_patt_hist1 :: (Model a) => PatternSwitch -> TH1F 
+                -> (Pattern -> Bool) -> (FullModel a -> Double) 
+                -> ModelCountIO a ()
+iter_patt_hist1 sw hist pattcheck histfunc 
+                = do h <- Iter.peek
+                     case h of 
+                       Nothing -> return ()
+                       Just fm -> do 
+                              let patt = pattType sw fm 
+                              if pattcheck patt 
+                                then do liftIO $ do putStrLn "hist add"
+                                                    fillTH1F hist (histfunc fm)
+                                        Iter.head
+                                        iter_patt_hist1 sw hist pattcheck histfunc
+                                    --    return ()
+                                else do Iter.head
+                                        iter_patt_hist1 sw hist pattcheck histfunc
+                                    --    return ()
+
+mytestpattfunc [Neutralino1,Chargino1,Neutralino2,Stau1] = True
+mytestpattfunc _ = False
+
+mytesthistfunc fm = case inputparam fm of
+                      IDMM (_,_,_,alpham,_,_) -> alpham
+
+                              
          
 
 

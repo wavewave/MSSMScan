@@ -22,7 +22,7 @@ import Text.StringTemplate.Helpers
 import Data.Function
 import qualified Data.Map as M
 
-import Control.Monad.State.Lazy
+import Control.Monad.Trans.State.Lazy
 
 
 ---- latex print 
