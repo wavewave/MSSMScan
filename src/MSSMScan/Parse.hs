@@ -12,7 +12,6 @@ import Data.Function
 import qualified Data.ByteString.Lazy.Char8 as B
 import Data.ByteString.Lex.Lazy.Double 
 
-
 import Control.Monad
 
 -- import qualified Data.Vector.Fusion.Stream as Stream
@@ -153,6 +152,5 @@ newparsestr mdl str1 str2 =
                                 
               combinedresult  = mergeresult inputresult outputresult 
           in  combinedresult
-
 
 

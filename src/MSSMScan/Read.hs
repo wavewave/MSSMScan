@@ -28,6 +28,10 @@ import MSSMScan.Print
 
 import MSSMScan.Pattern
 
+import HROOT
+
+import qualified Data.ListLike as LL
+import qualified Data.Iteratee as Iter
 
 import Data.Function
 import qualified Data.Map as M
@@ -36,8 +40,7 @@ import Control.Monad.State.Strict
 
 
 data PatternSwitch = ROdd4 | NonSM7 | NonSM4
-data FileWorkSwitch = None | EachFileClassify
-
+data FileWorkSwitch = None | EachFileClassify | TH1FClassify | TH2FClassify
 
 
 
@@ -51,17 +54,27 @@ instance PrettyPrintable PatternOccurrenceList where
 
 
 type PatternHandleMap = M.Map Pattern Handle
+type PatternTH1FMap   = M.Map Pattern TH1F
+type PatternTH2FMap   = M.Map Pattern TH2F
 
+data InfoTH1F = InfoTH1F { th1f_title :: String }
+data InfoTH2F = InfoTH2F
 
 data Count a = Count { totalcount :: Int
                      , pattcount  :: PatternCountMap
                      , pattlist   :: (PatternModelMap a) 
                      , handlelist :: PatternHandleMap
+                     , th1finfo   :: InfoTH1F
+                     , th1flist   :: PatternTH1FMap
+                     , th2finfo   :: InfoTH2F
+                     , th2flist   :: PatternTH2FMap
                      , fileprefix :: String
                      }
 
 
 type CountState a = StateT (Count a) IO
+
+type ModelCountIO a = Iter.IterateeG [] (FullModel a) IO  
 
 --type CountState a= State (Count a)
 
@@ -77,6 +90,8 @@ classifyIOwork :: (Model a) => FileWorkSwitch -> Pattern -> (FullModel a)
               -> CountState a () 
 classifyIOwork None _ _ = return () 
 classifyIOwork EachFileClassify patt fullmodel = classifyPatternFile patt fullmodel
+classifyIOwork TH1FClassify patt fullmodel = classifyPatternTH1F patt fullmodel
+classifyIOwork TH2FClassify patt fullmodel = classifyPatternTH2F patt fullmodel
 
 
 classifyPatternFile :: (Model a) => Pattern -> (FullModel a) -> CountState a ()
@@ -100,6 +115,19 @@ classifyPatternFile patt fullmodel =
                                 
 
          Just h  -> liftIO $ hPutStrLn h $ print_fullmodel fullmodel  
+
+classifyPatternTH1F :: (Model a) => Pattern -> (FullModel a) -> CountState a ()
+classifyPatternTH1F patt fullmodel = 
+    do stat <- get
+
+       let info = th1finfo stat
+
+       liftIO $ putStrLn (th1f_title info)
+
+classifyPatternTH2F :: (Model a) => Pattern -> (FullModel a) -> CountState a ()
+classifyPatternTH2F patt fullmodel = return ()
+
+
 
 print_fullmodel fullmodel = show (idnum fullmodel) ++ " : " ++ 
                             show (inputparam fullmodel) ++ " | " ++ 
@@ -131,6 +159,20 @@ feed_single_fullmodel_list iosw sw fmlst =
                    acclen' `seq`  accmap'  `seq`  
                         put $ stat' { totalcount = acclen' ,
                                       pattcount  = accmap' } 
+
+iter_count_total_models :: (Model a) => ModelCountIO a Int
+iter_count_total_models = Iter.length
+
+iter_patt_count :: (Model a) => PatternSwitch -> ModelCountIO a PatternCountMap
+iter_patt_count sw = Iter.IterateeG (step M.empty) 
+    where 
+      addPatternList acc lst = foldl' (flip addPattern) acc (map (pattType sw) lst)
+      step acc (Iter.Chunk xs)  
+           | LL.null xs = return $ Iter.Cont (Iter.IterateeG (step acc)) Nothing
+      step acc (Iter.Chunk xs) = return $ Iter.Cont (Iter.IterateeG . step $! addPatternList acc xs) Nothing
+      step acc str = return $ Iter.Done acc str
+                                                     
+         
 
 
 prettyprint :: (Model a) => FullModel a -> IO ()
