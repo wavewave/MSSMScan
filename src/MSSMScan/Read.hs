@@ -54,31 +54,8 @@ instance PrettyPrintable PatternOccurrenceList where
               formatting x = show (fst x) ++ ":" ++ show (snd x)
 
 
-type PatternHandleMap = M.Map Pattern Handle
-type PatternTH1FMap   = M.Map Pattern TH1F
-type PatternTH2FMap   = M.Map Pattern TH2F
-
-data InfoTH1F = InfoTH1F { th1f_title :: String }
-data InfoTH2F = InfoTH2F
-
-data Count a = Count { totalcount :: Int
-                     , pattcount  :: PatternCountMap
-                     , pattlist   :: (PatternModelMap a) 
-                     , handlelist :: PatternHandleMap
-                     , th1finfo   :: InfoTH1F
-                     , th1flist   :: PatternTH1FMap
-                     , th2finfo   :: InfoTH2F
-                     , th2flist   :: PatternTH2FMap
-                     , fileprefix :: String
-                     , testth1f   :: TH1F
-                     }
-
-
-type CountState a = StateT (Count a) IO
 
 type ModelCountIO a = Iter.IterateeG [] (FullModel a) IO  
-
---type CountState a= State (Count a)
 
 pattType :: (Model a) => PatternSwitch -> FullModel a -> Pattern
 pattType sw fm = case sw of 
@@ -88,46 +65,6 @@ pattType sw fm = case sw of
 
 
 
-classifyIOwork :: (Model a) => FileWorkSwitch -> Pattern -> (FullModel a) 
-              -> CountState a () 
-classifyIOwork None _ _ = return () 
-classifyIOwork EachFileClassify patt fullmodel = classifyPatternFile patt fullmodel
-classifyIOwork TH1FClassify patt fullmodel = classifyPatternTH1F patt fullmodel
-classifyIOwork TH2FClassify patt fullmodel = classifyPatternTH2F patt fullmodel
-
-
-classifyPatternFile :: (Model a) => Pattern -> (FullModel a) -> CountState a ()
-classifyPatternFile patt fullmodel = 
-    do stat <- get
-
-       let prefix = fileprefix stat
-           hdl    = handlelist stat
-       let hdllkup = M.lookup patt hdl 
-
-       case hdllkup of 
-         Nothing -> do newhdl <- liftIO $ 
-                                 do putStrLn ("new pattern " ++ show patt)
-                                    let fn = prefix ++ show patt ++ ".dat" 
-                                             
-                                    h <- openFile fn WriteMode
-                                    hPutStrLn h $ print_fullmodel fullmodel
-                                    return $ M.insert patt h hdl
-                       put $ stat {handlelist = newhdl}
-                       
-                                
-
-         Just h  -> liftIO $ hPutStrLn h $ print_fullmodel fullmodel  
-
-classifyPatternTH1F :: (Model a) => Pattern -> (FullModel a) -> CountState a ()
-classifyPatternTH1F patt fullmodel = 
-    do stat <- get
-
-       let info = th1finfo stat
-
-       liftIO $ putStrLn (th1f_title info)
-
-classifyPatternTH2F :: (Model a) => Pattern -> (FullModel a) -> CountState a ()
-classifyPatternTH2F patt fullmodel = return ()
 
 
 
@@ -135,32 +72,6 @@ print_fullmodel fullmodel = show (idnum fullmodel) ++ " : " ++
                             show (inputparam fullmodel) ++ " | " ++ 
                             show (outputphys fullmodel)
 
-
-
-addPatternModelMap :: (Model a) => PatternSwitch -> PatternModelMap a -> FullModel a -> PatternModelMap a
-addPatternModelMap sw pmm fm = addPatternModel (pattType sw fm) fm pmm
-
-
-feed_single_fullmodel_list :: (Model a) => FileWorkSwitch -> PatternSwitch 
-                           -> [FullModel a] -> CountState a ()
-feed_single_fullmodel_list iosw sw fmlst = 
-    do mapM_  onefilestep fmlst 
-    where onefilestep fullmodel 
-              = do stat <- get 
-                   let acclen    = totalcount stat
-                       accmap    = pattcount  stat 
-
-                       patt      = pattType sw fullmodel
-                       accmap'   = addPattern patt accmap 
-                       acclen'   = acclen + 1 
-
-
-                   classifyIOwork iosw patt fullmodel
-                   stat' <- get 
-
-                   acclen' `seq`  accmap'  `seq`  
-                        put $ stat' { totalcount = acclen' ,
-                                      pattcount  = accmap' } 
 
 iter_count_total_models :: (Model a) => ModelCountIO a Int
 iter_count_total_models = Iter.length
@@ -184,23 +95,13 @@ iter_patt_hist1 sw hist pattcheck histfunc
                        Just fm -> do 
                               let patt = pattType sw fm 
                               if pattcheck patt 
-                                then do liftIO $ do putStrLn "hist add"
-                                                    fillTH1F hist (histfunc fm)
+                                then do liftIO $ do fillTH1F hist (histfunc fm)
                                         Iter.head
                                         iter_patt_hist1 sw hist pattcheck histfunc
                                     --    return ()
                                 else do Iter.head
                                         iter_patt_hist1 sw hist pattcheck histfunc
                                     --    return ()
-
-mytestpattfunc [Neutralino1,Chargino1,Neutralino2,Stau1] = True
-mytestpattfunc _ = False
-
-mytesthistfunc fm = case inputparam fm of
-                      IDMM (_,_,_,alpham,_,_) -> alpham
-
-                              
-         
 
 
 prettyprint :: (Model a) => FullModel a -> IO ()
@@ -291,5 +192,5 @@ patternoccorder (patt1,occ1) (patt2,occ2) =
     let patorder = patternorder patt1 patt2
     in case patorder of 
          EQ        -> compare occ2 occ1
-         otherwise -> patorder
+         _         -> patorder
 

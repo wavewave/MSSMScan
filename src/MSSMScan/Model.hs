@@ -2,14 +2,18 @@
 
 module MSSMScan.Model where
 
+import Data.Typeable
+
 import qualified Data.ByteString.Lazy.Char8 as B
 
 import MSSMScan.OutputPhys
 
 data DMM    = DMM
+              deriving Typeable
 data MSUGRA = MSUGRA
+            deriving Typeable
 
-class (Show (ModelInput a)) => Model a where
+class (Show (ModelInput a), Typeable a) => Model a where
     data ModelInput a  
     parseInput :: B.ByteString -> (ModelInput a)
     tanbeta :: (ModelInput a) -> Double
