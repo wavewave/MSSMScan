@@ -104,6 +104,25 @@ iter_patt_hist1 sw hist pattcheck histfunc
                                     --    return ()
 
 
+iter_patt_hist2 :: (Model a) => PatternSwitch -> TH2F 
+                -> (Pattern -> Bool) -> (FullModel a -> (Double,Double)) 
+                -> ModelCountIO a ()
+iter_patt_hist2 sw hist pattcheck histfunc 
+                = do h <- Iter.peek
+                     case h of 
+                       Nothing -> return ()
+                       Just fm -> do 
+                              let patt = pattType sw fm 
+                              if pattcheck patt 
+                                then do liftIO $ do fillTH2F hist (histfunc fm)
+                                        Iter.head
+                                        iter_patt_hist2 sw hist pattcheck histfunc
+                                    --    return ()
+                                else do Iter.head
+                                        iter_patt_hist2 sw hist pattcheck histfunc
+                                    --    return ()
+
+
 prettyprint :: (Model a) => FullModel a -> IO ()
 prettyprint x = putStrLn $ "id =" ++ show (idnum x) ++ " : " 
                            ++ show (inputparam x) 
