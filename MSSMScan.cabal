@@ -1,5 +1,5 @@
 Name:		MSSMScan
-Version:	0.4
+Version:	0.4.1
 Synopsis:	Common Scan Interface for MSSM models
 Description: 	Common Scan Interface for MSSM models such as mSUGRA, 
 		Deflected Mirage Mediation et al. 
@@ -7,11 +7,12 @@ License: 	BSD3
 License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
-Build-Depends:	base>4, binary, transformers, split, bytestring, bytestring-lexing, containers,  parallel>2, deepseq, HStringTemplate, HStringTemplateHelpers, HROOT, ListLike, iteratee
+Build-Depends:	base>4, binary, transformers, split, bytestring, bytestring-lexing, containers,  parallel>2, deepseq, HStringTemplate, HStringTemplateHelpers, HROOT==0.1.1, ListLike, iteratee
 Build-Type: 	Simple
 
 hs-source-dirs: src
 ghc-options: 	-Wall -O2 -threaded -funbox-strict-fields -fno-warn-unused-do-bind
+ghc-prof-options: -caf-all -auto-all
 
 Exposed-Modules: 
 		 MSSMScan,  

@@ -77,7 +77,7 @@ iter_count_total_models :: (Model a) => ModelCountIO a Int
 iter_count_total_models = Iter.length
 
 iter_patt_count :: (Model a) => PatternSwitch -> ModelCountIO a PatternCountMap
-iter_patt_count sw = Iter.IterateeG (step M.empty) 
+iter_patt_count sw = Iter.IterateeG (step (M.empty :: PatternCountMap) ) 
     where 
       addPatternList acc lst = foldl' (flip addPattern) acc (map (pattType sw) lst)
       step acc (Iter.Chunk xs)  
@@ -95,14 +95,14 @@ iter_patt_hist1 sw hist pattcheck histfunc
                        Just fm -> do 
                               let patt = pattType sw fm 
                               if pattcheck patt 
-                                then do liftIO $ do fillTH1F hist (histfunc fm)
+                                then do liftIO $ do fill hist (histfunc fm)
                                         Iter.head
                                         iter_patt_hist1 sw hist pattcheck histfunc
                                     --    return ()
                                 else do Iter.head
                                         iter_patt_hist1 sw hist pattcheck histfunc
                                     --    return ()
-
+  
 
 iter_patt_hist2 :: (Model a) => PatternSwitch -> TH2F 
                 -> (Pattern -> Bool) -> (FullModel a -> (Double,Double)) 
@@ -114,7 +114,7 @@ iter_patt_hist2 sw hist pattcheck histfunc
                        Just fm -> do 
                               let patt = pattType sw fm 
                               if pattcheck patt 
-                                then do liftIO $ do fillTH2F hist (histfunc fm)
+                                then do liftIO $ do fill hist (histfunc fm)
                                         Iter.head
                                         iter_patt_hist2 sw hist pattcheck histfunc
                                     --    return ()
