@@ -85,6 +85,7 @@ iter_patt_count sw = Iter.IterateeG (step (M.empty :: PatternCountMap) )
       step acc (Iter.Chunk xs) = return $ Iter.Cont (Iter.IterateeG . step $! addPatternList acc xs) Nothing
       step acc str = return $ Iter.Done acc str
                                                      
+
 iter_patt_hist1 :: (Model a) => PatternSwitch -> TH1F 
                 -> (Pattern -> Bool) -> (FullModel a -> Double) 
                 -> ModelCountIO a ()

@@ -70,7 +70,7 @@ data MassType = Higgs | HeavyHiggs | AHiggs | CHiggs
               | Stop2 | Sbottom2 | Stau2 
               deriving (Show,Eq,Ord,Enum)
 
-instance NFData MassType 
+--instance NFData MassType 
 
 nulloutput = OutputPhys 0 0 0 0 0 0 0 0 0 0 
                         0 0 0 0 0 0 0 0 0 0 
