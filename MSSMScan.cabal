@@ -1,9 +1,9 @@
 Name:		MSSMScan
-Version:	0.4.2
+Version:	0.5.0.0
 Synopsis:	Common Scan Interface for MSSM models
 Description: 	Common Scan Interface for MSSM models such as mSUGRA, 
 		Deflected Mirage Mediation et al. 
-License: 	BSD3
+License: 	GPLv3
 License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
