@@ -3,40 +3,20 @@
 
 module MSSMScan.Read where
 
-import Debug.Trace
-
-import System.IO
-import System.Environment
-
-import Data.Int
 import Data.List
 
-import qualified Data.ByteString.Lazy as L
-import qualified Data.Binary as B
-import qualified Data.Binary.Get as G
-
-
-import Control.Parallel
-import Control.DeepSeq
-
 import MSSMScan.Model
-import MSSMScan.Model.MSUGRA
-import MSSMScan.Model.DMM
 import MSSMScan.OutputPhys
-import MSSMScan.Parse
-import MSSMScan.Print 
 
 import MSSMScan.Pattern
 
 import HROOT
 
 import qualified Data.ListLike as LL
-import qualified Data.Iteratee as Iter
+import qualified Data.Iteratee.ListLike as Iter
 
-import Data.Function
 import qualified Data.Map as M
 
-import Control.Monad.Trans.State.Strict
 
 import Control.Monad.IO.Class
 
@@ -55,7 +35,7 @@ instance PrettyPrintable PatternOccurrenceList where
 
 
 
-type ModelCountIO a = Iter.IterateeG [] (FullModel a) IO  
+type ModelCountIO a = Iter.Iteratee [FullModel a] IO  
 
 pattType :: (Model a) => PatternSwitch -> FullModel a -> Pattern
 pattType sw fm = case sw of 
@@ -77,13 +57,14 @@ iter_count_total_models :: (Model a) => ModelCountIO a Int
 iter_count_total_models = Iter.length
 
 iter_patt_count :: (Model a) => PatternSwitch -> ModelCountIO a PatternCountMap
-iter_patt_count sw = Iter.IterateeG (step (M.empty :: PatternCountMap) ) 
+iter_patt_count sw = Iter.liftI (step (M.empty :: PatternCountMap))  
     where 
       addPatternList acc lst = foldl' (flip addPattern) acc (map (pattType sw) lst)
       step acc (Iter.Chunk xs)  
-           | LL.null xs = return $ Iter.Cont (Iter.IterateeG (step acc)) Nothing
-      step acc (Iter.Chunk xs) = return $ Iter.Cont (Iter.IterateeG . step $! addPatternList acc xs) Nothing
-      step acc str = return $ Iter.Done acc str
+           | LL.null xs = Iter.icont (step acc) Nothing
+      step acc (Iter.Chunk xs) = let acc' = addPatternList acc xs 
+                                 in  acc' `seq`  Iter.icont  (step acc') Nothing 
+      step acc str = Iter.idone acc str
                                                      
 
 iter_patt_hist1 :: (Model a) => PatternSwitch -> TH1F 

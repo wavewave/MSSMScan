@@ -3,27 +3,15 @@
 
 module MSSMScan.Print where
 
-
-import Debug.Trace
-
 import Data.List.Split
 
-import MSSMScan.Model
-import MSSMScan.Model.MSUGRA
-import MSSMScan.Model.DMM
 import MSSMScan.OutputPhys
-import MSSMScan.Parse
 import MSSMScan.Pattern
 
 import Text.StringTemplate
 import Text.StringTemplate.Helpers
 
-
-import Data.Function
 import qualified Data.Map as M
-
-import Control.Monad.Trans.State.Lazy
-
 
 ---- latex print 
 
@@ -72,8 +60,8 @@ instance LaTeXPrint MassType where
 
 
 latexprintlist :: (LaTeXPrint a) => String -> [a] -> String 
-latexprintlist splitter []  = ""
-latexprintlist splitter [x] = latexprint x
+latexprintlist _ []  = ""
+latexprintlist _ [x] = latexprint x
 latexprintlist splitter (x:xs) = latexprint x ++ splitter 
                                   ++ latexprintlist splitter xs 
 

@@ -4,15 +4,10 @@ module MSSMScan.Model.DMM where
 
 import MSSMScan.Model
 
-import MSSMScan.ParseUtil
-
 import qualified Data.ByteString.Lazy.Char8 as B
 import Data.ByteString.Lex.Lazy.Double 
 
-
 import Data.Binary 
-
-
    
 -- | InputDMM = NMess, MMess, M0, alpham, alphag, tanb
 instance Model DMM where

@@ -4,29 +4,12 @@ module MSSMScan.Parse where
 
 import Debug.Trace
 
-
-
-import MSSMScan.ParseUtil
-
-import Data.Function
 import qualified Data.ByteString.Lazy.Char8 as B
 import Data.ByteString.Lex.Lazy.Double 
 
-import Control.Monad
-
--- import qualified Data.Vector.Fusion.Stream as Stream
-
-
-import System.IO
-import System.Environment
 
 import MSSMScan.Model
-import MSSMScan.Model.MSUGRA
-import MSSMScan.Model.DMM
 import MSSMScan.OutputPhys
-
-import MSSMScan.Pattern
-
 
 
 isRight (Left x) = False 

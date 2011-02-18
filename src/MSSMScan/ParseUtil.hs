@@ -2,10 +2,6 @@
 
 module MSSMScan.ParseUtil where
 
-import Data.Function
-import qualified Data.ByteString.Lazy as L
-import qualified Data.Binary as B
-
 
 correct_double_str :: String -> String 
 correct_double_str str = let (x,y) = break ( == '.') str

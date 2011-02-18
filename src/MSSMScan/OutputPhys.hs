@@ -2,15 +2,8 @@
 
 module MSSMScan.OutputPhys where
 
-import qualified Data.ByteString.Lazy as L
-
 import Data.Binary 
 import Data.List
-import qualified Data.Map as M
-
-import Control.Parallel.Strategies
-
-
 
 -- | OutputPhys : output of SoftSUSY and MicrOmegas.                 
 data OutputPhys = OutputPhys {

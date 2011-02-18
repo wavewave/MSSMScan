@@ -4,12 +4,8 @@ module MSSMScan.Model.MSUGRA where
 
 import MSSMScan.Model
 
-import MSSMScan.ParseUtil
-
-
 import qualified Data.ByteString.Lazy.Char8 as B
 import Data.ByteString.Lex.Lazy.Double 
-
 
 
 instance Model MSUGRA where
