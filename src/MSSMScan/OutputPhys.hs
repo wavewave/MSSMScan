@@ -209,3 +209,18 @@ isrparityodd AHiggs     = False
 isrparityodd CHiggs     = False
 isrparityodd _          = True
 
+isColored :: MassType -> Bool 
+isColored Gluino    = True
+isColored SupL      = True
+isColored SdownL    = True
+isColored SupR      = True 
+isColored SdownR    = True
+isColored ScharmL   = True
+isColored SstrangeL = True
+isColored ScharmR   = True
+isColored SstrangeR = True
+isColored Stop1     = True
+isColored Sbottom1  = True
+isColored Stop2     = True
+isColored Sbottom2  = True
+isColored _         = False
