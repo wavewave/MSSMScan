@@ -20,11 +20,6 @@ import qualified Data.Map as M
 
 import Control.Monad.IO.Class
 
-data PatternSwitch = ROdd4 | NonSM7 | NonSM4
-data FileWorkSwitch = None | EachFileClassify | TH1FClassify | TH2FClassify
-
-
-
 class PrettyPrintable a where
     pretty_print :: a -> IO ()
 
@@ -34,75 +29,11 @@ instance PrettyPrintable PatternOccurrenceList where
               formatting x = show (fst x) ++ ":" ++ show (snd x)
 
 
-
 type ModelCountIO a = Iter.Iteratee [FullModel a] IO  
-
-pattType :: (Model a) => PatternSwitch -> FullModel a -> Pattern
-pattType sw fm = case sw of 
-                   ROdd4  -> take 4 $ tidyup_1st_2nd_gen $ roddsort fm
-                   NonSM7 -> take 7 $ tidyup_1st_2nd_gen $ nonsmsort fm 
-                   NonSM4 -> take 4 $ tidyup_1st_2nd_gen $ nonsmsort fm
-
-
-
-
-
 
 print_fullmodel fullmodel = show (idnum fullmodel) ++ " : " ++ 
                             show (inputparam fullmodel) ++ " | " ++ 
                             show (outputphys fullmodel)
-
-
-iter_count_total_models :: (Model a) => ModelCountIO a Int
-iter_count_total_models = Iter.length
-
-iter_patt_count :: (Model a) => PatternSwitch -> ModelCountIO a PatternCountMap
-iter_patt_count sw = Iter.liftI (step (M.empty :: PatternCountMap))  
-    where 
-      addPatternList acc lst = foldl' (flip addPattern) acc (map (pattType sw) lst)
-      step acc (Iter.Chunk xs)  
-           | LL.null xs = Iter.icont (step acc) Nothing
-      step acc (Iter.Chunk xs) = let acc' = addPatternList acc xs 
-                                 in  acc' `seq`  Iter.icont  (step acc') Nothing 
-      step acc str = Iter.idone acc str
-                                                     
-
-iter_patt_hist1 :: (Model a) => PatternSwitch -> TH1F 
-                -> (Pattern -> Bool) -> (FullModel a -> Double) 
-                -> ModelCountIO a ()
-iter_patt_hist1 sw hist pattcheck histfunc 
-                = do h <- Iter.peek
-                     case h of 
-                       Nothing -> return ()
-                       Just fm -> do 
-                              let patt = pattType sw fm 
-                              if pattcheck patt 
-                                then do liftIO $ do fill hist (histfunc fm)
-                                        Iter.head
-                                        iter_patt_hist1 sw hist pattcheck histfunc
-                                    --    return ()
-                                else do Iter.head
-                                        iter_patt_hist1 sw hist pattcheck histfunc
-                                    --    return ()
-  
-
-iter_patt_hist2 :: (Model a) => PatternSwitch -> TH2F 
-                -> (Pattern -> Bool) -> (FullModel a -> (Double,Double)) 
-                -> ModelCountIO a ()
-iter_patt_hist2 sw hist pattcheck histfunc 
-                = do h <- Iter.peek
-                     case h of 
-                       Nothing -> return ()
-                       Just fm -> do 
-                              let patt = pattType sw fm 
-                              if pattcheck patt 
-                                then do liftIO $ do fill hist (histfunc fm)
-                                        Iter.head
-                                        iter_patt_hist2 sw hist pattcheck histfunc
-                                    --    return ()
-                                else do Iter.head
-                                        iter_patt_hist2 sw hist pattcheck histfunc
-                                    --    return ()
 
 
 prettyprint :: (Model a) => FullModel a -> IO ()
@@ -149,8 +80,6 @@ kind_SdownR = [SdownR,SstrangeR]
 kind_SleptonL = [SelectronL,SmuonL]
 kind_SleptonR = [SelectronR,SmuonR]
 kind_Sneutrino = [SeneutrinoL,SmuneutrinoL]
-
- 
 
 
 --- cut functions.
