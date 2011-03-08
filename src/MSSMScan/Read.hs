@@ -6,7 +6,7 @@ module MSSMScan.Read where
 import Data.List
 
 import MSSMScan.Model
-import MSSMScan.OutputPhys
+import HEP.Physics.MSSM.Type
 
 import MSSMScan.Pattern
 

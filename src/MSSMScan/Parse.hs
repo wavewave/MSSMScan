@@ -9,7 +9,8 @@ import Data.ByteString.Lex.Lazy.Double
 
 
 import MSSMScan.Model
-import MSSMScan.OutputPhys
+import HEP.Physics.MSSM.Type
+
 
 
 isRight (Left x) = False 

@@ -2,7 +2,8 @@ module MSSMScan.Pattern where
 
 import qualified Data.Map as M
 import MSSMScan.Model
-import MSSMScan.OutputPhys
+import HEP.Physics.MSSM.Type
+
 
 type Pattern = [MassType] 
 type PatternCountMap = M.Map Pattern Int 

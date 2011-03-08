@@ -5,7 +5,9 @@ module MSSMScan.Print where
 
 import Data.List.Split
 
-import MSSMScan.OutputPhys
+
+import HEP.Physics.MSSM.Type
+
 import MSSMScan.Pattern
 
 import Text.StringTemplate

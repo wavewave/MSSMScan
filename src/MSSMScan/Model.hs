@@ -6,7 +6,7 @@ import Data.Typeable
 
 import qualified Data.ByteString.Lazy.Char8 as B
 
-import MSSMScan.OutputPhys
+import HEP.Physics.MSSM.Type
 
 data DMM    = DMM
               deriving Typeable
