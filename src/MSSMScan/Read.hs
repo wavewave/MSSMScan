@@ -10,7 +10,7 @@ import MSSMScan.OutputPhys
 
 import MSSMScan.Pattern
 
-import HROOT
+-- import HROOT
 
 import qualified Data.ListLike as LL
 import qualified Data.Iteratee.ListLike as Iter
