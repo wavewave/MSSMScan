@@ -1,5 +1,5 @@
 Name:		MSSMScan
-Version:	0.5.1.0
+Version:	0.5.1.1
 Synopsis:	Common Scan Interface for MSSM models
 Description: 	Common Scan Interface for MSSM models such as mSUGRA, 
 		Deflected Mirage Mediation et al. 
@@ -7,7 +7,7 @@ License: 	GPL-3
 License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
-Build-Depends:	base>4, binary, transformers, split, bytestring, bytestring-lexing, containers,  parallel>2, deepseq, HStringTemplate, HStringTemplateHelpers, ListLike, iteratee, MSSMType
+Build-Depends:	base>4, binary, transformers, split, bytestring, bytestring-lexing, containers,  parallel>2, deepseq, HStringTemplate, HStringTemplateHelpersIW , ListLike, iteratee, MSSMType
 Build-Type: 	Simple
 
 hs-source-dirs: src

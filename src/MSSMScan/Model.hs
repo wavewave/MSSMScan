@@ -1,4 +1,5 @@
-{-# OPTIONS_GHC -fglasgow-exts #-}
+{-# LANGUAGE TypeFamilies, FlexibleInstances, FlexibleContexts,  
+             DeriveDataTypeable #-}
 
 module MSSMScan.Model where
 
