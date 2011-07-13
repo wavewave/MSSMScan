@@ -2,9 +2,9 @@
              DeriveDataTypeable, TypeSynonymInstances  #-}
 
 
-module MSSMScan.Model.DMM where
+module HEP.ModelScan.MSSMScan.Model.DMM where
 
-import MSSMScan.Model
+import HEP.ModelScan.MSSMScan.Model
 
 import qualified Data.ByteString.Lazy.Char8 as B
 import Data.ByteString.Lex.Lazy.Double 

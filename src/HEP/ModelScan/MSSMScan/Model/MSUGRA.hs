@@ -1,9 +1,9 @@
 {-# LANGUAGE TypeFamilies, FlexibleInstances, FlexibleContexts,  
              DeriveDataTypeable, TypeSynonymInstances  #-}
 
-module MSSMScan.Model.MSUGRA where
+module HEP.ModelScan.MSSMScan.Model.MSUGRA where
 
-import MSSMScan.Model
+import HEP.ModelScan.MSSMScan.Model
 
 import qualified Data.ByteString.Lazy.Char8 as B
 import Data.ByteString.Lex.Lazy.Double 

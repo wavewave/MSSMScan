@@ -1,5 +1,5 @@
 Name:		MSSMScan
-Version:	0.5.1.1
+Version:	0.6.0.0
 Synopsis:	Common Scan Interface for MSSM models
 Description: 	Common Scan Interface for MSSM models such as mSUGRA, 
 		Deflected Mirage Mediation et al. 
@@ -7,7 +7,7 @@ License: 	GPL-3
 License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
-Build-Depends:	base>4, binary, transformers, split, bytestring, bytestring-lexing, containers,  parallel>2, deepseq, HStringTemplate, HStringTemplateHelpersIW , ListLike, iteratee, MSSMType
+Build-Depends:	base>4, binary, transformers, split, bytestring, bytestring-lexing, containers,  parallel>2, deepseq, HStringTemplate, HStringTemplateHelpersIW , ListLike, iteratee, MSSMType>=0.0.1.0
 Build-Type: 	Simple
 
 hs-source-dirs: src
@@ -15,13 +15,13 @@ ghc-options: 	-Wall -O2 -threaded -funbox-strict-fields -fno-warn-unused-do-bind
 ghc-prof-options: -caf-all -auto-all
 
 Exposed-Modules: 
-		 MSSMScan,  
-		 MSSMScan.Model,
-		 MSSMScan.Model.MSUGRA,
-		 MSSMScan.Model.DMM, 
-		 MSSMScan.ParseUtil,
-		 MSSMScan.Parse, 
-		 MSSMScan.Print, 
-		 MSSMScan.Read,
-		 MSSMScan.Pattern
+		 HEP.ModelScan.MSSMScan,  
+		 HEP.ModelScan.MSSMScan.Model,
+		 HEP.ModelScan.MSSMScan.Model.MSUGRA,
+		 HEP.ModelScan.MSSMScan.Model.DMM, 
+		 HEP.ModelScan.MSSMScan.ParseUtil,
+		 HEP.ModelScan.MSSMScan.Parse, 
+		 HEP.ModelScan.MSSMScan.Print, 
+		 HEP.ModelScan.MSSMScan.Read,
+		 HEP.ModelScan.MSSMScan.Pattern
 		 

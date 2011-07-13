@@ -1,14 +1,14 @@
 {-# OPTIONS_GHC -fglasgow-exts #-}
 {-# LANGUAGE BangPatterns #-}
 
-module MSSMScan.Read where
+module HEP.ModelScan.MSSMScan.Read where
 
 import Data.List
 
-import MSSMScan.Model
-import HEP.Physics.MSSM.Type
+import HEP.ModelScan.MSSMScan.Model
+import HEP.Physics.MSSM.OutputPhys
 
-import MSSMScan.Pattern
+import HEP.ModelScan.MSSMScan.Pattern
 
 -- import HROOT
 

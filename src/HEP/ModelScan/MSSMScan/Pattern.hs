@@ -1,8 +1,8 @@
-module MSSMScan.Pattern where
+module HEP.ModelScan.MSSMScan.Pattern where
 
 import qualified Data.Map as M
-import MSSMScan.Model
-import HEP.Physics.MSSM.Type
+import HEP.ModelScan.MSSMScan.Model
+import HEP.Physics.MSSM.OutputPhys
 
 
 type Pattern = [MassType] 

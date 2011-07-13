@@ -1,6 +1,4 @@
-{-# OPTIONS_GHC -fglasgow-exts #-}
-
-module MSSMScan.Parse where
+module HEP.ModelScan.MSSMScan.Parse where
 
 import Debug.Trace
 
@@ -8,8 +6,9 @@ import qualified Data.ByteString.Lazy.Char8 as B
 import Data.ByteString.Lex.Lazy.Double 
 
 
-import MSSMScan.Model
-import HEP.Physics.MSSM.Type
+import HEP.ModelScan.MSSMScan.Model
+
+import HEP.Physics.MSSM.OutputPhys
 
 
 

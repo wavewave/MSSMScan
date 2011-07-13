@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -fglasgow-exts #-}
 
-module MSSMScan.ParseUtil where
+module HEP.ModelScan.MSSMScan.ParseUtil where
 
 
 correct_double_str :: String -> String 

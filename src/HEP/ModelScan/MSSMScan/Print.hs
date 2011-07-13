@@ -1,14 +1,14 @@
 {-# OPTIONS_GHC -fglasgow-exts #-}
 {-# LANGUAGE BangPatterns #-}
 
-module MSSMScan.Print where
+module HEP.ModelScan.MSSMScan.Print where
 
 import Data.List.Split
 
 
-import HEP.Physics.MSSM.Type
+import HEP.Physics.MSSM.OutputPhys
 
-import MSSMScan.Pattern
+import HEP.ModelScan.MSSMScan.Pattern
 
 import Text.StringTemplate
 import Text.StringTemplate.Helpers

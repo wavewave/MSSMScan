@@ -1,13 +1,13 @@
 {-# LANGUAGE TypeFamilies, FlexibleInstances, FlexibleContexts,  
              DeriveDataTypeable #-}
 
-module MSSMScan.Model where
+module HEP.ModelScan.MSSMScan.Model where
 
 import Data.Typeable
 
 import qualified Data.ByteString.Lazy.Char8 as B
 
-import HEP.Physics.MSSM.Type
+import HEP.Physics.MSSM.OutputPhys
 
 data DMM    = DMM
               deriving Typeable
